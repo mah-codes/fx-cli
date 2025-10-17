@@ -9,6 +9,8 @@ A command-line tool for fetching foreign exchange rates using the OpenExchangeRa
 - Clean, simple command-line interface
 - Support for 'today' keyword for current rates
 
+<img width="491" height="256" alt="image" src="https://github.com/user-attachments/assets/d7b188fe-2a94-4dd0-9727-e6ceccbc47fc" />
+
 ## Installation
 
 ### Quick Install (Recommended)
