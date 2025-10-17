@@ -1,0 +1,22 @@
+[project]
+name = "fx-cli"
+version = "0.1.0"
+description = "Foreign Exchange Rate CLI Tool"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.25.0",
+    "python-dotenv>=1.0.0",
+    "click>=8.0.0",
+]
+
+[project.scripts]
+fx = "fx_cli.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/fx-cli"
+Repository = "https://github.com/yourusername/fx-cli"
