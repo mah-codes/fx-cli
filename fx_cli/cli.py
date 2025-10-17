@@ -29,6 +29,11 @@ def main(date: str, currency: str, target_currency: str = None, verbose: bool = 
         except ValueError:
             raise click.BadParameter(f"Invalid date format: {date}. Use YYYY-MM-DD or 'today'")
         
+        # Normalize currency codes to uppercase
+        currency = currency.upper()
+        if target_currency:
+            target_currency = target_currency.upper()
+        
         # Validate currency codes
         if len(currency) != 3:
             raise click.BadParameter(f"Invalid currency code: {currency}. Must be 3 letters")
@@ -42,14 +47,28 @@ def main(date: str, currency: str, target_currency: str = None, verbose: bool = 
         if verbose:
             click.echo(f"Fetching rates for {date}...")
         
-        if target_currency:
-            # Convert between two currencies
-            rate = api.convert_currency(date, currency, target_currency)
-            click.echo(f'FX rate for {date} {currency} to {target_currency}: {rate:,.4f}')
-        else:
-            # Get rate relative to USD
-            rate = api.get_rate(date, currency)
-            click.echo(f'FX rate for {date} USD to {currency}: {rate:,.4f}')
+        # Try to get rates, with retry for API key errors
+        max_retries = 1
+        for attempt in range(max_retries + 1):
+            try:
+                if target_currency:
+                    # Convert between two currencies
+                    rate = api.convert_currency(date, currency, target_currency)
+                    click.echo(f'FX rate for {date} {currency} to {target_currency}: {rate:,.4f}')
+                else:
+                    # Get rate relative to USD
+                    rate = api.get_rate(date, currency)
+                    click.echo(f'FX rate for {date} USD to {currency}: {rate:,.4f}')
+                break  # Success, exit retry loop
+                
+            except FXAPIError as e:
+                # Check if it's specifically an authentication error and we haven't exceeded retries
+                if ("Invalid or expired API key" in str(e)) and attempt < max_retries:
+                    click.echo(f"⚠️  {str(e)}", err=True)
+                    api.refresh_api_key()
+                    continue  # Retry with new API key
+                else:
+                    raise  # Re-raise the error (including 400, 404, etc.)
             
     except FXAPIError as e:
         click.echo(f"Error: {str(e)}", err=True)
