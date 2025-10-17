@@ -16,7 +16,9 @@ A command-line tool for fetching foreign exchange rates using the OpenExchangeRa
 ```bash
 # Install pipx if you don't have it
 brew install pipx
+```
 
+```bash
 # Install fx-cli directly from GitHub
 pipx install git+https://github.com/mah-codes/fx-cli.git
 ```
